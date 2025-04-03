@@ -1,0 +1,39 @@
+runtime: nodejs20
+
+instance_class: F1
+
+automatic_scaling:
+  min_idle_instances: 0
+  max_idle_instances: 1
+  min_instances: 0
+  max_instances: 1
+  min_pending_latency: 30ms
+  max_pending_latency: 100ms
+  max_concurrent_requests: 50
+
+handlers:
+  # Handle assets from Vite build
+  - url: /(assets/.*)
+    static_files: client/dist/\1
+    upload: client/dist/assets/.*
+    secure: always
+
+  # Handle other static files
+  - url: /(.*\.(js|css|ico|png|jpg|jpeg|gif|webp|svg|mp3|wav|json))
+    static_files: client/dist/\1
+    upload: client/dist/.*\.(js|css|ico|png|jpg|jpeg|gif|webp|svg|mp3|wav|json)
+    secure: always
+
+  # Handle the main HTML file
+  - url: /
+    static_files: client/dist/index.html
+    upload: client/dist/index.html
+    secure: always
+    
+  # Handle all other routes for client-side routing
+  - url: /(.*)
+    script: auto
+    secure: always
+
+env_variables:
+  NODE_ENV: "production"
